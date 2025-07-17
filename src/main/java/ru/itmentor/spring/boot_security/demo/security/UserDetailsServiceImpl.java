@@ -1,4 +1,4 @@
-package ru.itmentor.spring.boot_security.demo.service;
+package ru.itmentor.spring.boot_security.demo.security;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

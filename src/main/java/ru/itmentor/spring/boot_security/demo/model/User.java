@@ -50,7 +50,11 @@ public class User implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableSet()); //через сет
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     @Override
