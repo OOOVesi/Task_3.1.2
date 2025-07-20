@@ -27,14 +27,17 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
+    @Override
     public Optional<User> findById(Long id) {
         return userRepository.findById(id);
     }
 
+    @Override
     public User saveUser(User user, Set<String> roleNames) {
         Set<Role> roles = roleRepository.findAll().stream()
                 .filter(role -> roleNames.contains(role.getName()))
@@ -46,6 +49,7 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(user);
     }
 
+    @Override
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
