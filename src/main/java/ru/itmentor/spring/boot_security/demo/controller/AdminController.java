@@ -35,60 +35,28 @@ public class AdminController {
 
     @GetMapping("/users")
     public ResponseEntity<List<UserResponseDto>> getAllUsers() {
-        List<User> allUsers = userService.findAll();
-        List<UserResponseDto> usersDto = allUsers.stream()
-                .map(userMapper::toResponseDto)
-                .collect(Collectors.toList());
+        List<UserResponseDto> usersDto = userService.findAll();
         return ResponseEntity.ok(usersDto);
     }
 
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
-        return userService.findById(id)
-                .map(user -> ResponseEntity.ok(userMapper.toResponseDto(user)))
-                .orElse(ResponseEntity.notFound().build());
+        return userService.getUserResponseById(id);
     }
 
-    @PostMapping("/users")
+    @PostMapping("/add")
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserUpdateDto userUpdateDto) {
-        User user = userMapper.toUser(userUpdateDto);
-        User savedUser = userService.saveUser(user, userUpdateDto.getRoles());
-        return ResponseEntity.ok(userMapper.toResponseDto(savedUser));
+        return userService.saveUser(userUpdateDto);
     }
 
     @PutMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
                                                       @RequestBody UserUpdateDto userUpdateDto) {
-        User existing = userService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        boolean wasAdmin = existing.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
-        boolean willBeAdmin = userUpdateDto.getRoles().contains("ROLE_ADMIN");
-
-        if (wasAdmin && !willBeAdmin) {
-            throw new SecurityException("Нельзя снять роль ADMIN у администратора!");
-        }
-
-        userUpdateDto.setId(id);
-        User userToSave = userMapper.toUser(userUpdateDto);
-        User updated = userService.saveUser(userToSave, userUpdateDto.getRoles());
-        return ResponseEntity.ok(userMapper.toResponseDto(updated));
+        return userService.updateUser(id, userUpdateDto);
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        User user = userService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        boolean isAdmin = user.getRoles().stream()
-                .anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
-
-        if (isAdmin) {
-            throw new SecurityException("Нельзя удалить пользователя с ролью ADMIN!");
-        }
-
-        userService.deleteById(id);
-        return ResponseEntity.noContent().build();
+        return userService.deleteById(id);
     }
 }

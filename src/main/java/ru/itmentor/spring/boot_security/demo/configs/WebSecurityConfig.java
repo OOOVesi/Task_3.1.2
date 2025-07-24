@@ -45,6 +45,8 @@ public class WebSecurityConfig {
                 .antMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
+                .httpBasic()
+                .and()
                 .formLogin()
                 .loginProcessingUrl("/login")  // принимает POST с username/password
                 .successHandler(restAuthenticationSuccessHandler) // JSON, а не редирект
